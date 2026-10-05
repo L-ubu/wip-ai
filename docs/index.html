@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>wip-ai: what was I doing? Context restore across all your git repos</title>
+    <meta
+      name="description"
+      content="One command restores your context across all your git repos — recent activity, uncommitted work, unpushed commits — with a local-LLM welcome-back brief. Zero dependencies."
+    />
+    <meta property="og:title" content="wip-ai: what was I doing?" />
+    <meta
+      property="og:description"
+      content="Context restore across all your git repos in one glance, plus a welcome-back brief from your own local LLM. Zero deps, local-first, no API keys."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://l-ubu.github.io/wip-ai/" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>"
+    />
+    <style>
+      :root {
+        --bg: #0a0c10;
+        --bg-soft: #11151c;
+        --panel: #151a23;
+        --line: #232a36;
+        --text: #e6edf3;
+        --muted: #8b98a9;
+        --dim: #5c6773;
+        --accent: #f472b6;
+        --accent-dim: #ec4899;
+        --green: #4ade80;
+        --red: #f87171;
+        --amber: #fbbf24;
+        --cyan: #22d3ee;
+        --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+        --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--sans);
+        line-height: 1.6;
+        background-image:
+          linear-gradient(rgba(244, 114, 182, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(244, 114, 182, 0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+      }
+      .wrap { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+      nav {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 20px 0; border-bottom: 1px solid var(--line);
+      }
+      .logo { font-family: var(--mono); font-weight: 700; color: var(--accent); text-decoration: none; }
+      .nav-links a { color: var(--muted); text-decoration: none; margin-left: 20px; font-size: 14px; }
+      .nav-links a:hover { color: var(--accent); }
+      .hero { text-align: center; padding: 56px 0 40px; }
+      .ascii {
+        font-family: var(--mono);
+        font-size: clamp(6px, 1.6vw, 13px);
+        line-height: 1.2;
+        color: var(--accent);
+        text-shadow: 0 0 20px rgba(244, 114, 182, 0.35);
+        white-space: pre;
+        display: inline-block;
+        text-align: left;
+        margin: 0 0 24px;
+      }
+      h1 { font-size: clamp(26px, 4vw, 40px); margin: 0 0 12px; letter-spacing: -0.5px; }
+      .tagline { color: var(--muted); font-size: 17px; max-width: 620px; margin: 0 auto 24px; }
+      .badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 32px; }
+      .badge {
+        font-family: var(--mono); font-size: 12px; padding: 4px 10px;
+        border: 1px solid var(--line); border-radius: 4px; color: var(--muted); background: var(--bg-soft);
+      }
+      .badge b { color: var(--accent); font-weight: 600; }
+      .install {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+        padding: 14px 18px; font-family: var(--mono); font-size: 14px;
+        max-width: 560px; margin: 0 auto;
+      }
+      .install code { color: var(--green); overflow-x: auto; white-space: nowrap; }
+      .copy {
+        background: none; border: 1px solid var(--line); color: var(--muted); border-radius: 4px;
+        padding: 4px 10px; cursor: pointer; font-family: var(--mono); font-size: 12px; flex-shrink: 0;
+      }
+      .copy:hover { border-color: var(--accent); color: var(--accent); }
+      section { padding: 48px 0; border-top: 1px solid var(--line); }
+      h2 { font-size: 24px; margin: 0 0 8px; }
+      h2 .hash { color: var(--accent); }
+      .sub { color: var(--muted); margin: 0 0 28px; }
+      .terminal {
+        background: #0d1117; border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+        box-shadow: 0 0 40px rgba(244, 114, 182, 0.06);
+      }
+      .term-bar {
+        display: flex; gap: 6px; padding: 10px 14px;
+        background: var(--bg-soft); border-bottom: 1px solid var(--line);
+      }
+      .dot { width: 11px; height: 11px; border-radius: 50%; }
+      .dot.r { background: #ff5f57; } .dot.y { background: #febc2e; } .dot.g { background: #28c840; }
+      .term-body { padding: 18px; font-family: var(--mono); font-size: 13px; line-height: 1.7; overflow-x: auto; white-space: pre; }
+      .t-prompt { color: var(--green); }
+      .t-accent { color: var(--accent); }
+      .t-dim { color: var(--dim); }
+      .t-muted { color: var(--muted); }
+      .t-yellow { color: var(--amber); }
+      .t-cyan { color: var(--cyan); }
+      .t-red { color: var(--red); }
+      .t-green { color: var(--green); }
+      .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+      .card {
+        background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 20px;
+        transition: border-color 0.2s, transform 0.2s;
+      }
+      .card:hover { border-color: var(--accent-dim); transform: translateY(-2px); }
+      .card h3 { margin: 0 0 8px; font-size: 15px; font-family: var(--mono); color: var(--accent); }
+      .card p { margin: 0; color: var(--muted); font-size: 14px; }
+      table { width: 100%; border-collapse: collapse; font-size: 14px; }
+      th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+      th { color: var(--dim); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+      td code { font-family: var(--mono); color: var(--accent); font-size: 13px; }
+      td { color: var(--muted); }
+      .why-item { display: flex; gap: 16px; margin-bottom: 20px; }
+      .why-num { font-family: var(--mono); color: var(--accent); font-size: 20px; font-weight: 700; flex-shrink: 0; }
+      .why-item h3 { margin: 0 0 4px; font-size: 16px; }
+      .why-item p { margin: 0; color: var(--muted); font-size: 14px; }
+      pre.codeblock {
+        background: #0d1117; border: 1px solid var(--line); border-radius: 8px;
+        padding: 18px; font-family: var(--mono); font-size: 13px; overflow-x: auto; color: var(--text);
+      }
+      .codeblock .k { color: var(--cyan); }
+      .codeblock .s { color: var(--green); }
+      footer {
+        border-top: 1px solid var(--line); padding: 32px 0; text-align: center;
+        color: var(--dim); font-size: 13px;
+      }
+      footer a { color: var(--muted); text-decoration: none; }
+      footer a:hover { color: var(--accent); }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <nav>
+        <a class="logo" href="https://l-ubu.github.io/">~/L-ubu/wip-ai</a>
+        <div class="nav-links">
+          <a href="https://github.com/L-ubu/wip-ai">github</a>
+          <a href="https://github.com/L-ubu/wip-ai/issues">issues</a>
+          <a href="https://github.com/L-ubu">more tools</a>
+        </div>
+      </nav>
+
+      <header class="hero">
+        <div class="ascii">            _                            _
+__      __(_) _ __        __ _       (_)
+\ \ /\ / /| || '_ \ _____ / _` |      | |
+ \ V  V / | || |_) |_____| (_| |      | |
+  \_/\_/  |_|| .__/       \__,_|      |_|
+             |_|</div>
+        <h1>What was I doing?</h1>
+        <p class="tagline">
+          One command restores your context across all your git repos — recent activity, uncommitted work,
+          unpushed commits — plus a welcome-back brief from your own local LLM.
+        </p>
+        <div class="badges">
+          <span class="badge"><b>zero</b> dependencies</span>
+          <span class="badge">node <b>≥18</b></span>
+          <span class="badge"><b>local-first</b> · ollama</span>
+          <span class="badge">license: <b>MIT</b></span>
+        </div>
+        <div class="install">
+          <code>git clone https://github.com/L-ubu/wip-ai.git && cd wip-ai && npm link</code>
+          <button class="copy" onclick="copyInstall(this)">copy</button>
+        </div>
+      </header>
+
+      <section>
+        <h2><span class="hash">#</span> the monday-morning command</h2>
+        <p class="sub">20+ repos. Back from lunch, a meeting marathon, or a long weekend. <code>wip</code> is the save-state loader for your brain.</p>
+        <div class="terminal">
+          <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+          <div class="term-body"><span class="t-prompt">$</span> wip
+
+<span class="t-accent">  ▟ wip</span><span class="t-dim"> — what was I doing? (19 repos scanned)</span>
+
+<span class="t-dim">  REPO               LAST COMMIT  BRANCH    STATE</span>
+  <span class="t-green">●</span> wip-ai           just now     main      <span class="t-yellow">✎4</span>       <span class="t-dim">"feat: ollama brief"</span>
+  <span class="t-green">●</span> Terminup         2d ago       master    <span class="t-yellow">✎7</span> <span class="t-cyan">↑2</span>     <span class="t-dim">"tup: slime codex"</span>
+  <span class="t-green">●</span> jlr_mss          3d ago       feat/vat  <span class="t-yellow">✎2</span>       <span class="t-dim">"fix: vat nullable"</span>
+  <span class="t-yellow">●</span> flipper-portals  2w ago       main               <span class="t-dim">"eu portals batch 2"</span>
+  <span class="t-red">●</span> old-experiment   4mo ago      main               <span class="t-dim">"wip: broken"</span>
+<span class="t-dim">  … and 14 more (wip --all)</span>
+
+<span class="t-accent">  ▸ pick up where you left off —</span> wip-ai <span class="t-dim">(~/Projects/wip-ai)</span>
+<span class="t-yellow">    uncommitted:</span> <span class="t-dim">bin/wip-ai.mjs, src/brief.mjs, README.md</span>
+<span class="t-dim">    last commit: "feat: ollama brief" on main</span>
+
+<span class="t-cyan">  🤖 welcome-back brief</span><span class="t-dim"> (ollama qwen2.5:7b)</span>
+  You were mid-way through the wip-ai Ollama integration.
+  Pick up in src/brief.mjs — the prompt still needs tuning.
+  Commit the working scanner before context-switching.</div>
+        </div>
+      </section>
+
+      <section>
+        <h2><span class="hash">#</span> features</h2>
+        <p class="sub">Small tool, sharp edges.</p>
+        <div class="cards">
+          <div class="card">
+            <h3>multi-repo scan</h3>
+            <p>Scans every git repo under your roots in parallel. 70 repos in about a second.</p>
+          </div>
+          <div class="card">
+            <h3>local-llm brief</h3>
+            <p>Ollama writes a 3-line welcome-back: what you were doing, where to pick up, one next step. No cloud, no keys, no cost.</p>
+          </div>
+          <div class="card">
+            <h3>zero dependencies</h3>
+            <p>Plain Node ≥18 + git. Nothing to audit, nothing to break, nothing to update.</p>
+          </div>
+          <div class="card">
+            <h3>state at a glance</h3>
+            <p>Uncommitted files ✎, unpushed commits ↑, stashes ⚑, stale repos in red. The truth about your WIP, finally visible.</p>
+          </div>
+          <div class="card">
+            <h3>--json output</h3>
+            <p>Machine-readable everything. Pipe it into your own scripts, dashboards, or morning routine.</p>
+          </div>
+          <div class="card">
+            <h3>fails soft</h3>
+            <p>No Ollama running? Everything except the brief works fine. It just tells you and moves on.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2><span class="hash">#</span> commands</h2>
+        <p class="sub">One binary, two names: <code>wip</code> and <code>wip-ai</code>.</p>
+        <table>
+          <thead>
+            <tr><th>command</th><th>what it does</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>wip</code></td><td>scan repos, show recent activity + AI brief</td></tr>
+            <tr><td><code>wip --all</code></td><td>show every repo, not just the top 10</td></tr>
+            <tr><td><code>wip --no-ai</code></td><td>skip the Ollama brief (faster)</td></tr>
+            <tr><td><code>wip --json</code></td><td>machine-readable output</td></tr>
+            <tr><td><code>wip --days 7</code></td><td>only repos active in the last n days</td></tr>
+            <tr><td><code>wip --model llama3.2</code></td><td>pick a different Ollama model</td></tr>
+            <tr><td><code>wip --path ~/work</code></td><td>one-off extra directory to scan</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <h2><span class="hash">#</span> config</h2>
+        <p class="sub">Optional. Lives at <code>~/.config/wip-ai/config.json</code>.</p>
+        <pre class="codeblock">{
+  <span class="k">"roots"</span>: [<span class="s">"~/Projects"</span>],          <span class="t-dim">// directories whose children are scanned</span>
+  <span class="k">"extraRepos"</span>: [<span class="s">"~/dotfiles"</span>],    <span class="t-dim">// repos outside your roots</span>
+  <span class="k">"ignore"</span>: [<span class="s">"node_modules"</span>],      <span class="t-dim">// directory names to skip</span>
+  <span class="k">"model"</span>: <span class="s">"qwen2.5:7b"</span>,           <span class="t-dim">// Ollama model for the brief</span>
+  <span class="k">"ai"</span>: <span class="k">true</span>,                      <span class="t-dim">// master switch for the brief</span>
+  <span class="k">"max"</span>: <span class="k">10</span>                        <span class="t-dim">// rows shown by default</span>
+}</pre>
+      </section>
+
+      <section>
+        <h2><span class="hash">#</span> why</h2>
+        <p class="sub">Three honest reasons.</p>
+        <div class="why-item">
+          <span class="why-num">01</span>
+          <div>
+            <h3>Context switching is expensive</h3>
+            <p>Especially with ADD, especially with many side projects. Reloading "where was I" costs real time and energy — wip makes it one command.</p>
+          </div>
+        </div>
+        <div class="why-item">
+          <span class="why-num">02</span>
+          <div>
+            <h3>Local-first means private</h3>
+            <p>Your repo names and commit messages never leave your machine. The brief runs on your own Ollama model, offline if you want.</p>
+          </div>
+        </div>
+        <div class="why-item">
+          <span class="why-num">03</span>
+          <div>
+            <h3>Uncommitted work is invisible until it hurts</h3>
+            <p>Dirty repos, unpushed branches, forgotten stashes — wip surfaces all of it before you lose an evening of work to a clean install.</p>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        built by <a href="https://github.com/L-ubu">L-ubu</a> ·
+        <a href="https://github.com/L-ubu/wip-ai">source</a> ·
+        <a href="https://l-ubu.github.io/">more tools</a> · MIT
+      </footer>
+    </div>
+
+    <script>
+      function copyInstall(btn) {
+        navigator.clipboard.writeText('git clone https://github.com/L-ubu/wip-ai.git && cd wip-ai && npm link');
+        btn.textContent = 'copied!';
+        setTimeout(() => (btn.textContent = 'copy'), 1500);
+      }
+    </script>
+  </body>
+</html>
