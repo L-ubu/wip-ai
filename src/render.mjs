@@ -1,11 +1,11 @@
-// Terminal rendering — hand-rolled ANSI, zero deps.
+// Terminal rendering. Hand-rolled ANSI, zero deps.
 
 const ESC = '\x1b[';
 export const c = {
   reset: `${ESC}0m`,
   bold: `${ESC}1m`,
   dim: `${ESC}2m`,
-  pink: `${ESC}38;2;244;114;182m`, // #f472b6 — wip-ai accent
+  pink: `${ESC}38;2;244;114;182m`, // #f472b6, wip-ai accent
   green: `${ESC}38;2;74;222;128m`,
   yellow: `${ESC}38;2;250;204;21m`,
   red: `${ESC}38;2;248;113;113m`,
@@ -75,7 +75,7 @@ export function renderPickup(repo) {
   if (!repo) return '';
   const lines = [];
   lines.push('');
-  lines.push(paint(c.pink, `  ▸ pick up where you left off — `) + paint(c.bold, repo.name) + paint(c.dim, ` (${repo.path})`));
+  lines.push(paint(c.pink, `  ▸ pick up where you left off: `) + paint(c.bold, repo.name) + paint(c.dim, ` (${repo.path})`));
   if (repo.dirtyFiles.length) {
     const files = repo.dirtyFiles.slice(0, 5).join(', ');
     const more = repo.dirtyFiles.length > 5 ? ` +${repo.dirtyFiles.length - 5} more` : '';
@@ -91,7 +91,7 @@ export function renderHeader(count) {
   return (
     '\n' +
     paint(c.pink + c.bold, '  ▟ wip') +
-    paint(c.dim, ` — what was I doing? (${count} repos scanned)`)
+    paint(c.dim, ` · what was I doing? (${count} repos scanned)`)
   );
 }
 

@@ -12,7 +12,7 @@ export function git(cwd, args) {
   });
 }
 
-/** Collect the full state of one repo. Never throws — missing data becomes null. */
+/** Collect the full state of one repo. Never throws; missing data becomes null. */
 export async function repoState(dir) {
   const [branch, lastRaw, statusRaw, unpushedRaw, stashRaw] = await Promise.all([
     git(dir, ['branch', '--show-current']),

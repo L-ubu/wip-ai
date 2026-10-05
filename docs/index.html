@@ -6,7 +6,7 @@
     <title>wip-ai: what was I doing? Context restore across all your git repos</title>
     <meta
       name="description"
-      content="One command restores your context across all your git repos — recent activity, uncommitted work, unpushed commits — with a local-LLM welcome-back brief. Zero dependencies."
+      content="One command restores your context across all your git repos: recent activity, uncommitted work, unpushed commits. With a local-LLM welcome-back brief. Zero dependencies."
     />
     <meta property="og:title" content="wip-ai: what was I doing?" />
     <meta
@@ -146,25 +146,25 @@
   <body>
     <div class="wrap">
       <nav>
-        <a class="logo" href="https://l-ubu.github.io/">~/L-ubu/wip-ai</a>
+        <a class="logo" href="https://l-ubu.github.io/wip-ai/">▟ wip-ai</a>
         <div class="nav-links">
           <a href="https://github.com/L-ubu/wip-ai">github</a>
           <a href="https://github.com/L-ubu/wip-ai/issues">issues</a>
-          <a href="https://github.com/L-ubu">more tools</a>
+          <a href="https://l-ubu.github.io/">all tools</a>
         </div>
       </nav>
 
       <header class="hero">
-        <div class="ascii">            _                            _
-__      __(_) _ __        __ _       (_)
-\ \ /\ / /| || '_ \ _____ / _` |      | |
- \ V  V / | || |_) |_____| (_| |      | |
-  \_/\_/  |_|| .__/       \__,_|      |_|
-             |_|</div>
+        <div class="ascii">          _                   _
+__      _(_)_ __         __ _(_)
+\ \ /\ / / | '_ \ _____ / _` | |
+ \ V  V /| | |_) |_____| (_| | |
+  \_/\_/ |_| .__/       \__,_|_|
+           |_|</div>
         <h1>What was I doing?</h1>
         <p class="tagline">
-          One command restores your context across all your git repos — recent activity, uncommitted work,
-          unpushed commits — plus a welcome-back brief from your own local LLM.
+          One command restores your context across all your git repos: recent activity, uncommitted work,
+          unpushed commits. Plus a welcome-back brief from your own local LLM.
         </p>
         <div class="badges">
           <span class="badge"><b>zero</b> dependencies</span>
@@ -185,7 +185,7 @@ __      __(_) _ __        __ _       (_)
           <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
           <div class="term-body"><span class="t-prompt">$</span> wip
 
-<span class="t-accent">  ▟ wip</span><span class="t-dim"> — what was I doing? (19 repos scanned)</span>
+<span class="t-accent">  ▟ wip</span><span class="t-dim"> · what was I doing? (19 repos scanned)</span>
 
 <span class="t-dim">  REPO               LAST COMMIT  BRANCH    STATE</span>
   <span class="t-green">●</span> wip-ai           just now     main      <span class="t-yellow">✎4</span>       <span class="t-dim">"feat: ollama brief"</span>
@@ -195,13 +195,13 @@ __      __(_) _ __        __ _       (_)
   <span class="t-red">●</span> old-experiment   4mo ago      main               <span class="t-dim">"wip: broken"</span>
 <span class="t-dim">  … and 14 more (wip --all)</span>
 
-<span class="t-accent">  ▸ pick up where you left off —</span> wip-ai <span class="t-dim">(~/Projects/wip-ai)</span>
+<span class="t-accent">  ▸ pick up where you left off:</span> wip-ai <span class="t-dim">(~/Projects/wip-ai)</span>
 <span class="t-yellow">    uncommitted:</span> <span class="t-dim">bin/wip-ai.mjs, src/brief.mjs, README.md</span>
 <span class="t-dim">    last commit: "feat: ollama brief" on main</span>
 
 <span class="t-cyan">  🤖 welcome-back brief</span><span class="t-dim"> (ollama qwen2.5:7b)</span>
   You were mid-way through the wip-ai Ollama integration.
-  Pick up in src/brief.mjs — the prompt still needs tuning.
+  Pick up in src/brief.mjs, the prompt still needs tuning.
   Commit the working scanner before context-switching.</div>
         </div>
       </section>
@@ -276,7 +276,7 @@ __      __(_) _ __        __ _       (_)
           <span class="why-num">01</span>
           <div>
             <h3>Context switching is expensive</h3>
-            <p>Especially with ADD, especially with many side projects. Reloading "where was I" costs real time and energy — wip makes it one command.</p>
+            <p>Especially with ADD, especially with many side projects. Reloading "where was I" costs real time and energy. wip makes it one command.</p>
           </div>
         </div>
         <div class="why-item">
@@ -290,7 +290,7 @@ __      __(_) _ __        __ _       (_)
           <span class="why-num">03</span>
           <div>
             <h3>Uncommitted work is invisible until it hurts</h3>
-            <p>Dirty repos, unpushed branches, forgotten stashes — wip surfaces all of it before you lose an evening of work to a clean install.</p>
+            <p>Dirty repos, unpushed branches, forgotten stashes: wip surfaces all of it before you lose an evening of work to a clean install.</p>
           </div>
         </div>
       </section>

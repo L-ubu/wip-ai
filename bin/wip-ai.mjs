@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// wip-ai — what was I doing? Context restore across all your git repos.
+// wip-ai · what was I doing? Context restore across all your git repos.
 
 import { loadConfig, scanRepos } from '../src/scan.mjs';
 import { generateBrief } from '../src/brief.mjs';
@@ -8,7 +8,7 @@ import { renderHeader, renderTable, renderPickup, renderBrief, renderFooter, c }
 const VERSION = '1.0.0';
 
 const HELP = `
-  wip-ai — what was I doing?
+  wip-ai · what was I doing?
 
   Usage
     wip                 scan repos, show recent activity + AI brief
@@ -34,7 +34,7 @@ const HELP = `
   Legend
     ● green  active today / uncommitted work
     ● yellow quiet for a couple of weeks
-    ● red    stale — maybe revive or archive
+    ● red    stale: maybe revive or archive
     ✎n uncommitted files   ↑n unpushed commits   ⚑n stashes
 `;
 
@@ -79,7 +79,7 @@ if (opts.json) {
 }
 
 if (!repos.length) {
-  console.log('\n  no git repos found — check your roots in ~/.config/wip-ai/config.json\n');
+  console.log('\n  no git repos found. Check your roots in ~/.config/wip-ai/config.json\n');
   process.exit(0);
 }
 
@@ -92,7 +92,7 @@ if (wantAi) {
   if (brief) {
     process.stdout.write(renderBrief(brief, model));
   } else {
-    process.stdout.write('\n' + c.dim + '  (ollama not reachable — skipping brief. run `ollama serve` or use --no-ai)' + c.reset);
+    process.stdout.write('\n' + c.dim + '  (ollama not reachable, skipping brief. run `ollama serve` or use --no-ai)' + c.reset);
   }
 }
 

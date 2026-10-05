@@ -1,4 +1,4 @@
-// Local-LLM welcome-back brief via Ollama. Fails soft — no Ollama, no problem.
+// Local-LLM welcome-back brief via Ollama. Fails soft: no Ollama, no problem.
 
 import { relTime } from './render.mjs';
 
@@ -21,7 +21,7 @@ Given their most recently active git repos below, write a short welcome-back bri
 1) one line on what they were most recently doing (the FIRST repo is the most recent),
 2) one line on exactly where to pick up (name the repo, and a file only if listed above),
 3) one suggested concrete next step.
-Use ONLY the information given — never invent file names or repos.
+Use ONLY the information given; never invent file names or repos.
 Plain text, max 3 short lines total, no markdown, no bullet symbols, no fluff.
 
 Repos (most recent first):
