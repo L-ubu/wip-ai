@@ -1,0 +1,40 @@
+{
+  "name": "wip-ai",
+  "version": "1.0.0",
+  "description": "What was I doing? One command restores your context across all your git repos — with a local-LLM welcome-back brief. Zero dependencies.",
+  "type": "module",
+  "bin": {
+    "wip": "bin/wip-ai.mjs",
+    "wip-ai": "bin/wip-ai.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "bin",
+    "src"
+  ],
+  "keywords": [
+    "git",
+    "cli",
+    "context",
+    "wip",
+    "developer-tools",
+    "ollama",
+    "local-llm",
+    "productivity",
+    "adhd",
+    "multi-repo"
+  ],
+  "license": "MIT",
+  "author": "L-ubu (https://github.com/L-ubu)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/L-ubu/wip-ai.git"
+  },
+  "homepage": "https://l-ubu.github.io/wip-ai/",
+  "bugs": "https://github.com/L-ubu/wip-ai/issues",
+  "scripts": {
+    "wip": "node bin/wip-ai.mjs"
+  }
+}
