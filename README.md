@@ -8,22 +8,24 @@ You have 20+ repos. It's Monday morning (or Friday after a meeting marathon, or 
 
 ```
   ▟ wip · what was I doing? (19 repos scanned)
+    REPO               ACTIVE    BRANCH    STATE
 
-  REPO               LAST COMMIT  BRANCH  STATE
-  ● wip-ai           just now     main    ✎4        "feat: ollama brief"
-  ● Terminup         2d ago       master  ✎7 ↑2     "tup: slime codex"
-  ● jlr_mss          3d ago       feat..  ✎2        "fix: vat nullable"
-  ◐ flipper-portals  2w ago       main              "eu portals batch 2"
-  … and 15 more (wip --all)
+  ●  wip-ai            just now  main      ✎4  "feat: ollama brief"
+  ●  Terminup          2d ago    master    ✎7 ↑2  "tup: slime codex"
+  ●  jlr_mss           3d ago    feat/vat  ✎2  "fix: vat nullable"
+  ●  flipper-portals   2w ago    main      "eu portals batch 2"
+
+     … and 15 more (wip --all)
 
   ▸ pick up where you left off: wip-ai (~/Projects/wip-ai)
-    uncommitted: bin/wip-ai.mjs, src/brief.mjs, README.md
-    last commit: "feat: ollama brief" on main
+      uncommitted: bin/wip-ai.mjs, src/brief.mjs, README.md
+      last commit: "feat: ollama brief" on main
 
   🤖 welcome-back brief (ollama qwen2.5:7b)
-  You were mid-way through the wip-ai Ollama integration.
-  Pick up in src/brief.mjs, the prompt still needs tuning.
-  Commit the working scanner before context-switching.
+
+    You were mid-way through the wip-ai Ollama integration.
+    Pick up in src/brief.mjs, the prompt still needs tuning.
+    Commit the working scanner before context-switching.
 ```
 
 ## Why

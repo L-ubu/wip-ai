@@ -5,7 +5,7 @@ import { loadConfig, scanRepos } from '../src/scan.mjs';
 import { generateBrief } from '../src/brief.mjs';
 import { renderHeader, renderTable, renderPickup, renderBrief, renderFooter, c } from '../src/render.mjs';
 
-const VERSION = '1.1.0';
+const VERSION = '1.1.1';
 
 const HELP = `
   wip-ai · what was I doing?

@@ -35,7 +35,9 @@ export async function repoState(dir) {
     lastCommitSubject: subject || null,
     lastCommitRel: rel || null,
     dirtyCount: dirtyFiles.length,
-    dirtyFiles: dirtyFiles.map((l) => l.slice(3)),
+    // Porcelain prefix is 2 status chars + space, but the first line may be
+    // trimmed by the git() helper, so strip the prefix tolerantly.
+    dirtyFiles: dirtyFiles.map((l) => l.replace(/^[ MADRCU?!]{1,2}\s+/, '')),
     unpushed: unpushedRaw !== null ? Number(unpushedRaw) : null,
     stashes: stashRaw ? stashRaw.split('\n').filter(Boolean).length : 0,
   };

@@ -1,6 +1,6 @@
 {
   "name": "wip-ai",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "What was I doing? One command restores your context across all your git repos, with a local-LLM welcome-back brief. Zero dependencies.",
   "type": "module",
   "bin": {

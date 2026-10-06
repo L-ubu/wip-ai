@@ -50,23 +50,27 @@ const truncate = (s, n) => (s && s.length > n ? s.slice(0, n - 1) + '…' : s ||
 
 export function renderTable(repos, { max }) {
   const shown = repos.slice(0, max);
-  const nameW = Math.min(Math.max(...shown.map((r) => r.name.length), 4), 28);
-  const branchW = Math.min(Math.max(...shown.map((r) => r.branch.length), 6), 24);
+  const nameW = Math.min(Math.max(...shown.map((r) => r.name.length), 4), 20);
+  const branchW = Math.min(Math.max(...shown.map((r) => r.branch.length), 6), 18);
 
   const lines = [];
   lines.push('');
   lines.push(
-    paint(c.dim, `  ${'REPO'.padEnd(nameW)}  ${'LAST COMMIT'.padEnd(11)}  ${'BRANCH'.padEnd(branchW)}  STATE`)
+    paint(c.dim, `    ${'REPO'.padEnd(nameW)}  ${'ACTIVE'.padEnd(9)}  ${'BRANCH'.padEnd(branchW)}  STATE`)
   );
+  lines.push('');
   for (const r of shown) {
     const name = paint(c.bold, truncate(r.name, nameW).padEnd(nameW));
-    const time = paint(c.gray, relTime(r.lastCommitTs).padEnd(11));
+    const time = paint(c.gray, relTime(r.lastCommitTs).padEnd(9));
     const branch = paint(c.pink, truncate(r.branch, branchW).padEnd(branchW));
-    const subject = r.lastCommitSubject ? paint(c.dim, `  "${truncate(r.lastCommitSubject, 42)}"`) : '';
-    lines.push(`  ${statusDot(r)} ${name}  ${time}  ${branch}  ${badges(r)}${subject}`);
+    const tail = [badges(r), r.lastCommitSubject && paint(c.dim, `"${truncate(r.lastCommitSubject, 38)}"`)]
+      .filter(Boolean)
+      .join('  ');
+    lines.push(`  ${statusDot(r)}  ${name}  ${time}  ${branch}  ${tail}`.trimEnd());
   }
   if (repos.length > max) {
-    lines.push(paint(c.dim, `  … and ${repos.length - max} more (wip --all)`));
+    lines.push('');
+    lines.push(paint(c.dim, `     … and ${repos.length - max} more (wip --all)`));
   }
   return lines.join('\n');
 }
@@ -75,14 +79,15 @@ export function renderPickup(repo) {
   if (!repo) return '';
   const lines = [];
   lines.push('');
+  lines.push('');
   lines.push(paint(c.pink, `  ▸ pick up where you left off: `) + paint(c.bold, repo.name) + paint(c.dim, ` (${repo.path})`));
   if (repo.dirtyFiles.length) {
     const files = repo.dirtyFiles.slice(0, 5).join(', ');
     const more = repo.dirtyFiles.length > 5 ? ` +${repo.dirtyFiles.length - 5} more` : '';
-    lines.push(paint(c.yellow, `    uncommitted: `) + paint(c.dim, truncate(files + more, 90)));
+    lines.push(paint(c.yellow, `      uncommitted: `) + paint(c.dim, truncate(files + more, 84)));
   }
   if (repo.lastCommitSubject) {
-    lines.push(paint(c.gray, `    last commit: "${truncate(repo.lastCommitSubject, 70)}" on ${repo.branch}`));
+    lines.push(paint(c.gray, `      last commit: "${truncate(repo.lastCommitSubject, 70)}" on ${repo.branch}`));
   }
   return lines.join('\n');
 }
@@ -98,13 +103,15 @@ export function renderHeader(count) {
 export function renderBrief(text, model) {
   const lines = [];
   lines.push('');
+  lines.push('');
   lines.push(paint(c.cyan, `  🤖 welcome-back brief`) + paint(c.dim, ` (ollama ${model})`));
+  lines.push('');
   for (const line of text.split('\n').filter(Boolean)) {
-    lines.push(paint(c.reset, `  ${line}`));
+    lines.push(paint(c.reset, `    ${line}`));
   }
   return lines.join('\n');
 }
 
 export function renderFooter() {
-  return '\n' + paint(c.dim, '  flags: --all · --no-ai · --json · --days <n> · --model <m> · --help') + '\n';
+  return '\n\n' + paint(c.dim, '  flags: --all · --no-ai · --json · --days <n> · --model <m> · --help') + '\n';
 }
