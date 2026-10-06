@@ -51,8 +51,10 @@ wip --no-ai         # skip the Ollama brief (faster)
 wip --json          # machine-readable output
 wip --days 7        # only repos active in the last week
 wip --model llama3.2  # different Ollama model for the brief
-wip --path ~/work   # one-off extra directory to scan
+wip --path ~/work   # one-off extra repo or folder of repos
 ```
+
+By default wip auto-detects these folders in your home directory when they exist: `Projects`, `projects`, `Sites`, `sites`, `dev`, `code`, `repos`, `work`. Set `roots` in the config to override.
 
 ## Legend
 
@@ -71,7 +73,7 @@ Optional, at `~/.config/wip-ai/config.json`:
 
 ```json
 {
-  "roots": ["~/Projects"],
+  "roots": ["~/Projects", "~/sites"],
   "extraRepos": ["~/cursor-cost", "~/dotfiles"],
   "ignore": ["node_modules"],
   "model": "qwen2.5:7b",
@@ -80,7 +82,7 @@ Optional, at `~/.config/wip-ai/config.json`:
 }
 ```
 
-- **roots**: directories whose direct children get scanned for `.git`
+- **roots**: folders of repos to scan (`~` works). Default: auto-detected common folders
 - **extraRepos**: specific repos living outside your roots
 - **model**: any Ollama model you have pulled (`llama3.2` is faster, `qwen2.5:7b` follows instructions better)
 - **ai**: master switch for the brief (auto-skips if Ollama isn't running)

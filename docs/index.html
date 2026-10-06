@@ -260,7 +260,7 @@ __      _(_)_ __         __ _(_)
         <h2><span class="hash">#</span> config</h2>
         <p class="sub">Optional. Lives at <code>~/.config/wip-ai/config.json</code>.</p>
         <pre class="codeblock">{
-  <span class="k">"roots"</span>: [<span class="s">"~/Projects"</span>],          <span class="t-dim">// directories whose children are scanned</span>
+  <span class="k">"roots"</span>: [<span class="s">"~/Projects"</span>, <span class="s">"~/sites"</span>], <span class="t-dim">// folders of repos (default: auto-detected)</span>
   <span class="k">"extraRepos"</span>: [<span class="s">"~/dotfiles"</span>],    <span class="t-dim">// repos outside your roots</span>
   <span class="k">"ignore"</span>: [<span class="s">"node_modules"</span>],      <span class="t-dim">// directory names to skip</span>
   <span class="k">"model"</span>: <span class="s">"qwen2.5:7b"</span>,           <span class="t-dim">// Ollama model for the brief</span>

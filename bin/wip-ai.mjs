@@ -5,7 +5,7 @@ import { loadConfig, scanRepos } from '../src/scan.mjs';
 import { generateBrief } from '../src/brief.mjs';
 import { renderHeader, renderTable, renderPickup, renderBrief, renderFooter, c } from '../src/render.mjs';
 
-const VERSION = '1.0.0';
+const VERSION = '1.1.0';
 
 const HELP = `
   wip-ai · what was I doing?
@@ -17,13 +17,15 @@ const HELP = `
     wip --json          machine-readable output
     wip --days <n>      only repos active in the last n days
     wip --model <m>     Ollama model for the brief (default: qwen2.5:7b)
-    wip --path <dir>    add an extra directory to scan (one-off)
+    wip --path <dir>    add an extra repo or folder of repos (one-off)
     wip --version       print version
     wip --help          this help
 
   Config (~/.config/wip-ai/config.json)
     {
-      "roots": ["~/Projects"],        directories whose children are scanned
+      "roots": ["~/Projects", "~/sites"],  folders of repos (default: auto-detect
+                                           Projects, projects, Sites, sites,
+                                           dev, code, repos, work)
       "extraRepos": ["~/cursor-cost"], repos outside your roots
       "ignore": ["node_modules"],     directory names to skip
       "model": "qwen2.5:7b",          Ollama model

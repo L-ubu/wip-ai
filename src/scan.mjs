@@ -1,18 +1,23 @@
-import { readdir, access, readFile } from 'node:fs/promises';
+import { readdir, access, readFile, realpath } from 'node:fs/promises';
 import { join, basename, resolve } from 'node:path';
 import { homedir } from 'node:os';
 import { repoState } from './git.mjs';
 
 const CONFIG_PATH = join(homedir(), '.config', 'wip-ai', 'config.json');
 
+// Scanned by default when they exist (config.roots overrides this list).
+const CANDIDATE_ROOTS = ['Projects', 'projects', 'Sites', 'sites', 'dev', 'code', 'repos', 'work'];
+
 const DEFAULTS = {
-  roots: [join(homedir(), 'Projects')],
+  roots: null, // null = auto-detect from CANDIDATE_ROOTS
   extraRepos: [],
   ignore: ['node_modules'],
   model: 'qwen2.5:7b',
   ai: true,
   max: 10,
 };
+
+const expandHome = (p) => resolve(p.replace(/^~/, homedir()));
 
 export async function loadConfig() {
   try {
@@ -21,6 +26,20 @@ export async function loadConfig() {
   } catch {
     return { ...DEFAULTS };
   }
+}
+
+async function detectRoots() {
+  const out = [];
+  for (const name of CANDIDATE_ROOTS) {
+    const dir = join(homedir(), name);
+    try {
+      await access(dir);
+      out.push(dir);
+    } catch {
+      // doesn't exist, skip
+    }
+  }
+  return out;
 }
 
 async function isGitRepo(dir) {
@@ -32,11 +51,15 @@ async function isGitRepo(dir) {
   }
 }
 
-/** Discover repos: direct children of each root + explicit extraRepos. */
+/** Discover repos: each root itself (if it is a repo) + its direct children + explicit extraRepos. */
 export async function discoverRepos(config) {
   const found = new Set();
 
   for (const root of config.roots) {
+    if (await isGitRepo(root)) {
+      found.add(root);
+      continue;
+    }
     let entries = [];
     try {
       entries = await readdir(root, { withFileTypes: true });
@@ -51,16 +74,29 @@ export async function discoverRepos(config) {
   }
 
   for (const extra of config.extraRepos) {
-    const dir = resolve(extra.replace(/^~/, homedir()));
+    const dir = expandHome(extra);
     if (await isGitRepo(dir)) found.add(dir);
   }
 
-  return [...found];
+  // Dedupe by real path (macOS case-insensitive FS: ~/Projects == ~/projects)
+  const seen = new Map();
+  for (const d of found) {
+    let key = d;
+    try {
+      key = await realpath(d);
+    } catch {
+      // keep original
+    }
+    const k = key.toLowerCase();
+    if (!seen.has(k)) seen.set(k, d);
+  }
+  return [...seen.values()];
 }
 
 /** Scan all repos in parallel, return sorted by most recent commit. */
 export async function scanRepos(config, { extraRoot } = {}) {
-  const roots = extraRoot ? [...config.roots, resolve(extraRoot)] : config.roots;
+  let roots = config.roots ? config.roots.map(expandHome) : await detectRoots();
+  if (extraRoot) roots = [...roots, expandHome(extraRoot)];
   const dirs = await discoverRepos({ ...config, roots });
 
   const repos = await Promise.all(
